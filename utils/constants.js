@@ -17,4 +17,30 @@ export const AVAILABILITY_OPTIONS = [
   "",
 ];
 
+// Job type options
+export const JOB_TYPES = [
+  "full-time",
+  "part-time",
+  "contract",
+  "internship",
+  "remote",
+];
+
+// Job posting status
+export const JOB_STATUS = {
+  OPEN: "open",
+  CLOSED: "closed",
+};
+export const VALID_JOB_STATUSES = Object.values(JOB_STATUS);
+
+// Application status
+export const APPLICATION_STATUS = {
+  PENDING: "pending",
+  REVIEWED: "reviewed",
+  SHORTLISTED: "shortlisted",
+  REJECTED: "rejected",
+  ACCEPTED: "accepted",
+};
+export const VALID_APPLICATION_STATUSES = Object.values(APPLICATION_STATUS);
+
 export const PORT = process.env.PORT || 5000;

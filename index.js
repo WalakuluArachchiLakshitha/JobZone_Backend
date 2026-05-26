@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";
+import applicationRoutes from "./routes/applicationRoutes.js";
 import { PORT } from "./utils/constants.js";
 import { requireEnvVars } from "./utils/helpers.js";
 
@@ -25,12 +27,16 @@ app.get("/", (_req, res) => {
     endpoints: {
       auth: "/api/auth",
       users: "/api/users",
+      jobs: "/api/jobs",
+      applications: "/api/applications",
     },
   });
 });
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/jobs", jobRoutes);
+app.use("/api/applications", applicationRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((req, res) => {
