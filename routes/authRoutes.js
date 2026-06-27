@@ -1,7 +1,7 @@
 import express from "express";
 import { body } from "express-validator";
 import { register, login } from "../controllers/authController.js";
-import { VALID_ROLES } from "../utils/constants.js";
+import { authLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
@@ -9,9 +9,8 @@ const router = express.Router();
 
 const registerValidation = [
   body("name")
+    .optional()
     .trim()
-    .notEmpty()
-    .withMessage("Name is required")
     .isLength({ min: 2, max: 50 })
     .withMessage("Name must be between 2 and 50 characters"),
 
@@ -31,8 +30,14 @@ const registerValidation = [
   body("role")
     .notEmpty()
     .withMessage("Role is required")
-    .isIn(VALID_ROLES)
-    .withMessage(`Role must be one of: ${VALID_ROLES.join(", ")}`),
+    .isIn(["seeker", "employer", "candidate"])
+    .withMessage("Role must be one of: seeker, employer, candidate"),
+
+  body("nic")
+    .optional()
+    .trim()
+    .matches(/^([0-9]{9}[vVxX]|[0-9]{12})$/)
+    .withMessage("NIC must be a valid Sri Lankan NIC (e.g., 200012345678 or 123456789V)"),
 ];
 
 const loginValidation = [
@@ -50,7 +55,7 @@ const loginValidation = [
 
 // ── Routes ─────────────────────────────────────────────────────────────────
 
-router.post("/register", registerValidation, register);
-router.post("/login", loginValidation, login);
+router.post("/register", authLimiter, registerValidation, register);
+router.post("/login", authLimiter, loginValidation, login);
 
 export default router;

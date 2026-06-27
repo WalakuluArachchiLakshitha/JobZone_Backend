@@ -4,112 +4,83 @@ import {
   createJob,
   getJobs,
   getJobById,
+  getMyJobs,
   updateJob,
   deleteJob,
 } from "../controllers/jobController.js";
 import { protectRoute, restrictTo } from "../middleware/authMiddleware.js";
-import { JOB_TYPES, VALID_JOB_STATUSES } from "../utils/constants.js";
 
 const router = express.Router();
 
-// ── Validation rules ───────────────────────────────────────────────────────
+// ── Validation rules ──────────────────────────────────────────────────────
 
 const createJobValidation = [
   body("title")
-    .trim()
     .notEmpty()
-    .withMessage("Title is required")
-    .isLength({ min: 3, max: 120 })
-    .withMessage("Title must be between 3 and 120 characters"),
+    .withMessage("Job title is required")
+    .isLength({ max: 120 })
+    .withMessage("Title cannot exceed 120 characters"),
 
   body("description")
-    .trim()
     .notEmpty()
     .withMessage("Description is required")
-    .isLength({ min: 10, max: 5000 })
-    .withMessage("Description must be between 10 and 5000 characters"),
+    .isLength({ max: 5000 })
+    .withMessage("Description cannot exceed 5000 characters"),
 
   body("location")
-    .trim()
     .notEmpty()
-    .withMessage("Location is required")
-    .isLength({ max: 100 })
-    .withMessage("Location cannot exceed 100 characters"),
+    .withMessage("Location is required"),
 
   body("type")
     .notEmpty()
-    .withMessage("Job type is required")
-    .isIn(JOB_TYPES)
-    .withMessage(`Job type must be one of: ${JOB_TYPES.join(", ")}`),
+    .withMessage("Job type is required"),
 
   body("salary")
     .optional()
-    .isFloat({ min: 0 })
-    .withMessage("Salary must be a positive number"),
+    .isNumeric()
+    .withMessage("Salary must be a number"),
 
   body("skills")
     .optional()
     .isArray()
     .withMessage("Skills must be an array"),
 
-  body("skills.*")
+  body("noOfPositions")
     .optional()
-    .isString()
-    .trim()
-    .withMessage("Each skill must be a string"),
+    .isInt({ min: 1 })
+    .withMessage("Number of positions must be at least 1"),
 ];
 
 const updateJobValidation = [
+  param("id").isMongoId().withMessage("Invalid job ID format"),
+
   body("title")
     .optional()
-    .trim()
-    .isLength({ min: 3, max: 120 })
-    .withMessage("Title must be between 3 and 120 characters"),
+    .isLength({ max: 120 })
+    .withMessage("Title cannot exceed 120 characters"),
 
   body("description")
     .optional()
-    .trim()
-    .isLength({ min: 10, max: 5000 })
-    .withMessage("Description must be between 10 and 5000 characters"),
-
-  body("location")
-    .optional()
-    .trim()
-    .isLength({ max: 100 })
-    .withMessage("Location cannot exceed 100 characters"),
-
-  body("type")
-    .optional()
-    .isIn(JOB_TYPES)
-    .withMessage(`Job type must be one of: ${JOB_TYPES.join(", ")}`),
-
-  body("salary")
-    .optional()
-    .isFloat({ min: 0 })
-    .withMessage("Salary must be a positive number"),
-
-  body("skills")
-    .optional()
-    .isArray()
-    .withMessage("Skills must be an array"),
-
-  body("skills.*")
-    .optional()
-    .isString()
-    .trim()
-    .withMessage("Each skill must be a string"),
-
-  body("status")
-    .optional()
-    .isIn(VALID_JOB_STATUSES)
-    .withMessage(`Status must be one of: ${VALID_JOB_STATUSES.join(", ")}`),
+    .isLength({ max: 5000 })
+    .withMessage("Description cannot exceed 5000 characters"),
 ];
 
-const idParamValidation = [
+const jobIdValidation = [
   param("id").isMongoId().withMessage("Invalid job ID format"),
 ];
 
 // ── Routes ─────────────────────────────────────────────────────────────────
+
+// Public routes
+router.get("/", getJobs);
+
+// Protected employer routes (MUST be before /:id to avoid "employer" matching as an ID)
+router.get(
+  "/employer/my-jobs",
+  protectRoute,
+  restrictTo("employer"),
+  getMyJobs
+);
 
 router.post(
   "/",
@@ -119,15 +90,11 @@ router.post(
   createJob
 );
 
-router.get("/", getJobs);
-
-router.get("/:id", idParamValidation, getJobById);
-
 router.put(
   "/:id",
   protectRoute,
   restrictTo("employer"),
-  [...idParamValidation, ...updateJobValidation],
+  updateJobValidation,
   updateJob
 );
 
@@ -135,8 +102,11 @@ router.delete(
   "/:id",
   protectRoute,
   restrictTo("employer"),
-  idParamValidation,
+  jobIdValidation,
   deleteJob
 );
+
+// Public single-job route (AFTER all specific paths)
+router.get("/:id", jobIdValidation, getJobById);
 
 export default router;

@@ -34,6 +34,10 @@ const jobSchema = new mongoose.Schema(
       type: Number,
       min: 0,
     },
+    salaryText: {
+      type: String,
+      default: "",
+    },
     skills: {
       type: [String],
       default: [],
@@ -47,6 +51,75 @@ const jobSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+
+    // ── Extended fields for frontend ──────────────────────────
+    category: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    industry: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    experience: {
+      type: String,
+      default: "",
+    },
+    gender: {
+      type: String,
+      default: "Any",
+    },
+    deadline: {
+      type: String,
+      default: "",
+    },
+    noOfPositions: {
+      type: Number,
+      default: 1,
+      min: 1,
+    },
+    contactPerson: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    contactNumber: {
+      type: String,
+      default: "",
+    },
+    companyAddress: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    companyEmail: {
+      type: String,
+      default: "",
+    },
+    attachedFiles: [
+      {
+        name: { type: String },
+        url: { type: String },
+      },
+    ],
+    views: {
+      type: Number,
+      default: 0,
+    },
+    remote: {
+      type: Boolean,
+      default: false,
+    },
+    urgent: {
+      type: Boolean,
+      default: false,
+    },
+    featured: {
+      type: Boolean,
+      default: false,
     },
   },
   {
@@ -66,8 +139,10 @@ jobSchema.index({ type: 1 });
 jobSchema.index({ salary: 1 });
 jobSchema.index({ employer: 1 });
 jobSchema.index({ status: 1 });
+jobSchema.index({ category: 1 });
 jobSchema.index({ title: "text", description: "text" });
 
 const Job = mongoose.model("Job", jobSchema);
 
 export default Job;
+

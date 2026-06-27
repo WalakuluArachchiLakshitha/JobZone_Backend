@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { ROLE_ALIAS } from "../utils/constants.js";
 import { checkValidation, handleError } from "../utils/helpers.js";
 
 // ── Helper ────────────────────────────────────────────────────────────────────
@@ -14,7 +15,21 @@ function generateToken(userId) {
 const register = async (req, res) => {
   if (checkValidation(req, res)) return;
 
-  const { name, email, password, role } = req.body;
+  const {
+    name,
+    email,
+    password,
+    role,
+    // New profile fields from frontend Step 3
+    firstName,
+    lastName,
+    phone,
+    country,
+    region,
+    city,
+    organizationName,
+    nic,
+  } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -28,7 +43,34 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(12);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const newUser = await User.create({ name, email, passwordHash, role });
+    // Normalise role: frontend sends "candidate", backend stores "seeker"
+    const normalisedRole = ROLE_ALIAS[role] || role;
+
+    // Build location string from city/region/country
+    const locationParts = [city, region, country].filter(Boolean);
+    const location = locationParts.join(", ");
+
+    const userData = {
+      name: name || `${firstName || ""} ${lastName || ""}`.trim(),
+      email,
+      passwordHash,
+      role: normalisedRole,
+      firstName: firstName || "",
+      lastName: lastName || "",
+      phone: phone || "",
+      country: country || "",
+      region: region || "",
+      city: city || "",
+      location,
+      nic: nic || "",
+    };
+
+    // Employer-specific fields
+    if (normalisedRole === "employer" && organizationName) {
+      userData.companyName = organizationName;
+    }
+
+    const newUser = await User.create(userData);
     const token = generateToken(newUser._id);
 
     return res.status(201).json({

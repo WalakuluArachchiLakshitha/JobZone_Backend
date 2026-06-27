@@ -25,7 +25,99 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
-    // ── Seeker fields ────────────────────────────────────────
+    // ── NIC (National Identity Card) ─────────────────────────
+    nic: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    // ── Personal info ─────────────────────────────────────────
+    firstName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    phone: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    title: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    bio: {
+      type: String,
+      default: "",
+      maxlength: 2000,
+    },
+    avatar: {
+      type: String,
+      default: "",
+    },
+
+    // ── Location breakdown ────────────────────────────────────
+    location: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    country: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    region: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    city: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    // ── Social links ──────────────────────────────────────────
+    website: {
+      type: String,
+      default: "",
+    },
+    linkedin: {
+      type: String,
+      default: "",
+    },
+    github: {
+      type: String,
+      default: "",
+    },
+    twitter: {
+      type: String,
+      default: "",
+    },
+    facebook: {
+      type: String,
+      default: "",
+    },
+
+    // ── Summary fields ────────────────────────────────────────
+    experience: {
+      type: String,
+      default: "",
+    },
+    education: {
+      type: String,
+      default: "",
+    },
+
+    // ── Seeker fields ─────────────────────────────────────────
     skills: {
       type: [String],
       default: [],
@@ -35,23 +127,27 @@ const userSchema = new mongoose.Schema(
       enum: AVAILABILITY_OPTIONS,
       default: "",
     },
-    location: {
-      type: String,
-      default: "",
-      trim: true,
-    },
     resumeUrl: {
       type: String,
       default: "",
     },
 
-    // ── Employer fields ──────────────────────────────────────
+    // ── Employer fields ───────────────────────────────────────
     companyName: {
       type: String,
       default: "",
       trim: true,
     },
     companyWebsite: {
+      type: String,
+      default: "",
+    },
+    companyAddress: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    companyBR: {
       type: String,
       default: "",
     },
@@ -77,3 +173,4 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 
 export default User;
+
