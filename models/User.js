@@ -17,7 +17,12 @@ const userSchema = new mongoose.Schema(
     },
     passwordHash: {
       type: String,
-      required: true,
+      required: false,
+      default: "",
+    },
+    googleId: {
+      type: String,
+      default: "",
     },
     role: {
       type: String,
@@ -154,6 +159,16 @@ const userSchema = new mongoose.Schema(
     verified: {
       type: Boolean,
       default: false,
+    },
+
+    // ── Password reset OTP ────────────────────────────────────
+    resetOtp: {
+      type: String,
+      default: "",
+    },
+    resetOtpExpires: {
+      type: Date,
+      default: null,
     },
   },
   {
