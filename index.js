@@ -16,6 +16,7 @@ import savedJobRoutes from "./routes/savedJobRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import chatbotRoutes from "./routes/chatbotRoutes.js";
 import resumeRoutes from "./routes/resumeRoutes.js";
+import statsRoutes from "./routes/statsRoutes.js";
 import { PORT } from "./utils/constants.js";
 import { requireEnvVars } from "./utils/helpers.js";
 
@@ -96,6 +97,7 @@ app.use("/api/saved-jobs", savedJobRoutes);
 app.use("/api/resume", resumeRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/stats", statsRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((req, res) => {
