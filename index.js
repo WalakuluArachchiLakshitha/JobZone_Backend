@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import helmet from "helmet";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -18,9 +19,10 @@ import chatbotRoutes from "./routes/chatbotRoutes.js";
 import resumeRoutes from "./routes/resumeRoutes.js";
 import { PORT } from "./utils/constants.js";
 import { requireEnvVars } from "./utils/helpers.js";
+import { generalLimiter } from "./middleware/rateLimit.js";
 
 dotenv.config();
-requireEnvVars("MONGO_URI", "JWT_SECRET");
+requireEnvVars("MONGO_URI", "JWT_SECRET", "GOOGLE_CLIENT_ID", "EMAIL_USER", "EMAIL_PASS");
 
 const app = express();
 
@@ -61,7 +63,14 @@ app.use(
     credentials: true,
   })
 );
+
+// HTTP security headers
+app.use(helmet());
+
 app.use(express.json({ limit: "1mb" }));
+
+// Global rate limiting
+app.use(generalLimiter);
 
 // Serve uploaded files statically
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

@@ -220,7 +220,7 @@ const verifyOtp = async (req, res) => {
     );
 
     // Clear OTP from DB (one-time use)
-    user.resetOtp = "";
+    user.resetOtp = undefined;
     user.resetOtpExpires = null;
     await user.save();
 
@@ -275,7 +275,7 @@ const resetPassword = async (req, res) => {
     // Hash and save new password
     const salt = await bcrypt.genSalt(12);
     user.passwordHash = await bcrypt.hash(newPassword, salt);
-    user.resetOtp = "";
+    user.resetOtp = undefined;
     user.resetOtpExpires = null;
     await user.save();
 

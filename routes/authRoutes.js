@@ -34,11 +34,13 @@ const registerValidation = [
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long"),
 
+  // "candidate" is accepted as a frontend-friendly alias for "seeker".
+  // "admin" is intentionally excluded — admins are created directly in the DB, not via self-registration.
   body("role")
     .notEmpty()
     .withMessage("Role is required")
     .isIn(["seeker", "employer", "candidate"])
-    .withMessage("Role must be one of: seeker, employer, candidate"),
+    .withMessage("Role must be 'seeker' (job seeker) or 'employer'. Use 'candidate' as an alias for 'seeker'."),
 
   body("nic")
     .optional()
