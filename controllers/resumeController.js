@@ -1,7 +1,13 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import Resume from "../models/Resume.js";
 import User from "../models/User.js";
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle, ImageRun } from "docx";
 import { handleError } from "../utils/helpers.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ── GET /api/resume ───────────────────────────────────────────────────────────
 
@@ -87,6 +93,46 @@ const generateCV = async (req, res) => {
 
     // ── Build document sections ──────────────────────────────────────────
     const sections = [];
+
+    // Avatar / Photo header
+    if (user.avatar) {
+      try {
+        let imageBuffer = null;
+        if (user.avatar.startsWith("http")) {
+          const imgRes = await fetch(user.avatar);
+          if (imgRes.ok) {
+            const arrBuf = await imgRes.arrayBuffer();
+            imageBuffer = Buffer.from(arrBuf);
+          }
+        } else {
+          const cleanPath = user.avatar.startsWith("/") ? user.avatar.slice(1) : user.avatar;
+          const fullPath = path.join(__dirname, "..", cleanPath);
+          if (fs.existsSync(fullPath)) {
+            imageBuffer = fs.readFileSync(fullPath);
+          }
+        }
+
+        if (imageBuffer) {
+          sections.push(
+            new Paragraph({
+              children: [
+                new ImageRun({
+                  data: imageBuffer,
+                  transformation: {
+                    width: 90,
+                    height: 90,
+                  },
+                }),
+              ],
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 150 },
+            })
+          );
+        }
+      } catch (err) {
+        console.error("Failed to embed avatar image in DOCX CV:", err);
+      }
+    }
 
     // Header — Name & Contact
     sections.push(

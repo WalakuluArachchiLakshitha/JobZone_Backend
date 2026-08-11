@@ -65,15 +65,27 @@ app.use(
 );
 
 // HTTP security headers
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 
 app.use(express.json({ limit: "1mb" }));
 
 // Global rate limiting
 app.use(generalLimiter);
 
-// Serve uploaded files statically
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Serve uploaded files statically with cross-origin headers
+app.use(
+  "/uploads",
+  (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+  },
+  express.static(path.join(__dirname, "uploads"))
+);
 
 // ── Routes ─────────────────────────────────────────────────────────────────
 app.get("/", (_req, res) => {

@@ -90,6 +90,11 @@ const updateProfile = async (req, res) => {
       });
     }
 
+    const currentUser = await User.findById(req.user._id);
+    if (updates.avatar !== undefined && (!updates.avatar || !updates.avatar.trim()) && currentUser && currentUser.avatar) {
+      delete updates.avatar;
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
       { $set: updates },
