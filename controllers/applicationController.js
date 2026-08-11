@@ -101,7 +101,7 @@ const getApplications = async (req, res) => {
         })
         .populate({
           path: "seeker",
-          select: "name email skills availability location resumeUrl",
+          select: "name email skills availability location resumeUrl avatar title",
         })
         .sort({ createdAt: -1 })
         .skip(skip)
