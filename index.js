@@ -17,6 +17,7 @@ import savedJobRoutes from "./routes/savedJobRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import chatbotRoutes from "./routes/chatbotRoutes.js";
 import resumeRoutes from "./routes/resumeRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 import { PORT } from "./utils/constants.js";
 import { requireEnvVars } from "./utils/helpers.js";
 import { generalLimiter } from "./middleware/rateLimit.js";
@@ -103,6 +104,7 @@ app.get("/", (_req, res) => {
       resume: "/api/resume",
       admin: "/api/admin",
       chatbot: "/api/chatbot",
+      notifications: "/api/notifications",
     },
   });
 });
@@ -117,6 +119,7 @@ app.use("/api/saved-jobs", savedJobRoutes);
 app.use("/api/resume", resumeRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((req, res) => {
