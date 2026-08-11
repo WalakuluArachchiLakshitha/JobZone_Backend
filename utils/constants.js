@@ -49,20 +49,14 @@ export function normalizeJobType(type) {
 
 // Job categories (matches frontend dropdowns)
 export const JOB_CATEGORIES = [
-  "Technology",
-  "Design",
-  "Marketing",
-  "Finance",
-  "Healthcare",
-  "Sales",
-  "Engineering",
-  "Education",
   "Accounting & Finance",
-  "Administrative & Office Support",
+  "Administration & Office Support",
   "Agriculture, Farming",
   "Apparel, Garments & Textile",
   "Architecture, Construction & Property",
-  "Information Technology",
+  "Engineering & Technical",
+  "Hospitality, Travel & Tourism",
+  "Marketing, Sales & Business Development",
 ];
 
 // Experience levels

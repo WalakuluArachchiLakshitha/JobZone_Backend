@@ -7,6 +7,9 @@ import {
   getMyJobs,
   updateJob,
   deleteJob,
+  createJobAlert,
+  emailJob,
+  contactEmployer,
 } from "../controllers/jobController.js";
 import { protectRoute, restrictTo } from "../middleware/authMiddleware.js";
 
@@ -74,6 +77,9 @@ const jobIdValidation = [
 // Public routes
 router.get("/", getJobs);
 
+// Job alerts (must be before /:id)
+router.post("/alerts", createJobAlert);
+
 // Protected employer routes (MUST be before /:id to avoid "employer" matching as an ID)
 router.get(
   "/employer/my-jobs",
@@ -108,5 +114,11 @@ router.delete(
 
 // Public single-job route (AFTER all specific paths)
 router.get("/:id", jobIdValidation, getJobById);
+
+// Email job details to current user (or any mock action)
+router.post("/:id/email", jobIdValidation, emailJob);
+
+// Contact employer about a job (public, rate limited via general limiter)
+router.post("/:id/contact", jobIdValidation, contactEmployer);
 
 export default router;

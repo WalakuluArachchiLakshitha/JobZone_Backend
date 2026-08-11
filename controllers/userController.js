@@ -190,6 +190,28 @@ const getSeekers = async (req, res) => {
       User.countDocuments(filter),
     ]);
 
+    // Aggregate locations and sectors (based on title/skills for seekers)
+    const locationsAgg = await User.aggregate([
+      { $match: { role: ROLES.SEEKER } },
+      { $group: { _id: "$location", count: { $sum: 1 } } },
+      { $match: { _id: { $ne: null, $ne: "" } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+
+    const sectorsAgg = await User.aggregate([
+      { $match: { role: ROLES.SEEKER } },
+      { $group: { _id: "$title", count: { $sum: 1 } } },
+      { $match: { _id: { $ne: null, $ne: "" } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+
+    const counts = {
+      locations: locationsAgg.map(a => ({ name: a._id, count: a.count })),
+      sectors: sectorsAgg.map(a => ({ name: a._id, count: a.count })),
+    };
+
     return res.status(200).json({
       success: true,
       count: seekers.length,
@@ -197,6 +219,7 @@ const getSeekers = async (req, res) => {
       page: pageNum,
       totalPages: Math.ceil(total / limitNum),
       seekers,
+      counts
     });
   } catch (error) {
     return handleError(res, "Get seekers", error);

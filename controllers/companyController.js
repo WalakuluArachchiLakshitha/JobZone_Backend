@@ -79,6 +79,33 @@ const getCompanies = async (req, res) => {
       Company.countDocuments(filter),
     ]);
 
+    const locationsAgg = await Company.aggregate([
+      { $group: { _id: "$location", count: { $sum: 1 } } },
+      { $match: { _id: { $ne: null, $ne: "" } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+
+    const industriesAgg = await Company.aggregate([
+      { $group: { _id: "$industry", count: { $sum: 1 } } },
+      { $match: { _id: { $ne: null, $ne: "" } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+
+    const sizesAgg = await Company.aggregate([
+      { $group: { _id: "$size", count: { $sum: 1 } } },
+      { $match: { _id: { $ne: null, $ne: "" } } },
+      { $sort: { count: -1 } },
+      { $limit: 5 }
+    ]);
+
+    const counts = {
+      locations: locationsAgg.map(a => ({ name: a._id, count: a.count })),
+      industries: industriesAgg.map(a => ({ name: a._id, count: a.count })),
+      sizes: sizesAgg.map(a => ({ name: a._id, count: a.count })),
+    };
+
     return res.status(200).json({
       success: true,
       count: companies.length,
@@ -86,6 +113,7 @@ const getCompanies = async (req, res) => {
       page: pageNum,
       totalPages: Math.ceil(total / limitNum),
       companies,
+      counts
     });
   } catch (error) {
     return handleError(res, "Get companies", error);
