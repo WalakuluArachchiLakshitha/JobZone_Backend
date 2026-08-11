@@ -3,7 +3,7 @@ import Job from "../models/Job.js";
 import Application from "../models/Application.js";
 import Company from "../models/Company.js";
 import Contact from "../models/Contact.js";
-import { handleError } from "../utils/helpers.js";
+import { handleError, checkValidation } from "../utils/helpers.js";
 
 // ── GET /api/admin/stats ──────────────────────────────────────────────────────
 
@@ -93,6 +93,7 @@ const getAllUsers = async (req, res) => {
 // ── DELETE /api/admin/users/:id ───────────────────────────────────────────────
 
 const deleteUser = async (req, res) => {
+  if (checkValidation(req, res)) return;
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -146,6 +147,7 @@ const getPendingVerifications = async (_req, res) => {
 // ── PATCH /api/admin/verify-company/:id ───────────────────────────────────────
 
 const verifyCompany = async (req, res) => {
+  if (checkValidation(req, res)) return;
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -171,6 +173,7 @@ const verifyCompany = async (req, res) => {
 // ── PATCH /api/admin/reject-verification/:id ──────────────────────────────────
 
 const rejectVerification = async (req, res) => {
+  if (checkValidation(req, res)) return;
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -235,6 +238,7 @@ const getAllJobs = async (req, res) => {
 // ── DELETE /api/admin/jobs/:id ─────────────────────────────────────────────────
 
 const adminDeleteJob = async (req, res) => {
+  if (checkValidation(req, res)) return;
   try {
     const job = await Job.findById(req.params.id);
     if (!job) {

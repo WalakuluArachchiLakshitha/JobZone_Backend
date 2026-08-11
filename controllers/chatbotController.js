@@ -113,7 +113,7 @@ const handleMessage = async (req, res) => {
     }
 
     // "show cashier jobs", "find developer jobs in Colombo"
-    if (!searchQuery && searchQuery !== "") {
+    if (searchQuery === null) {
       for (const pattern of JOB_SEARCH_PATTERNS) {
         const match = text.match(pattern);
         if (match) {

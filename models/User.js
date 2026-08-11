@@ -179,6 +179,9 @@ const userSchema = new mongoose.Schema(
       transform(_doc, ret) {
         delete ret.passwordHash;
         delete ret.__v;
+        delete ret.resetOtp;
+        delete ret.resetOtpExpires;
+        delete ret.googleId;
         return ret;
       },
     },

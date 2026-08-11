@@ -1,6 +1,7 @@
 import Job from "../models/Job.js";
 import Application from "../models/Application.js";
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
 import { JOB_STATUS, normalizeJobType } from "../utils/constants.js";
 import { checkValidation, handleError, pickFields } from "../utils/helpers.js";
 
@@ -309,9 +310,8 @@ const getJobs = async (req, res) => {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
       try {
-        const jwt = await import("jsonwebtoken");
         const token = authHeader.split(" ")[1];
-        const decoded = jwt.default.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userProfile = await User.findById(decoded.id);
         if (userProfile && userProfile.role === "seeker") {
           jobsWithScores = jobsWithScores.map((job) => ({
@@ -365,9 +365,8 @@ const getJobById = async (req, res) => {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
       try {
-        const jwt = await import("jsonwebtoken");
         const token = authHeader.split(" ")[1];
-        const decoded = jwt.default.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userProfile = await User.findById(decoded.id);
         if (userProfile && userProfile.role === "seeker") {
           matchScore = calculateMatchScore(userProfile, job);
