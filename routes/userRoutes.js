@@ -147,8 +147,12 @@ router.post("/upload-avatar", protectRoute, uploadAvatar, async (req, res) => {
       return res.status(400).json({ success: false, message: "No file uploaded" });
     }
     const url = `/uploads/avatars/${req.file.filename}`;
-    await User.findByIdAndUpdate(req.user._id, { avatar: url });
-    res.status(200).json({ success: true, avatarUrl: url });
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { avatar: url },
+      { new: true }
+    ).select("-passwordHash");
+    res.status(200).json({ success: true, avatarUrl: url, user: updatedUser });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

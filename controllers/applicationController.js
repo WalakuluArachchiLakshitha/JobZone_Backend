@@ -1,5 +1,6 @@
 import Application from "../models/Application.js";
 import Job from "../models/Job.js";
+import Notification from "../models/Notification.js";
 import { ROLES, APPLICATION_STATUS } from "../utils/constants.js";
 import { checkValidation, handleError } from "../utils/helpers.js";
 
@@ -47,6 +48,23 @@ const applyForJob = async (req, res) => {
       coverLetter: coverLetter || "",
       status: APPLICATION_STATUS.PENDING,
     });
+
+    // Create Notification for the employer who posted the job
+    try {
+      if (job.employer) {
+        await Notification.create({
+          recipient: job.employer,
+          sender: req.user._id,
+          job: job._id,
+          application: application._id,
+          type: "JOB_APPLICATION",
+          title: "New Job Application",
+          message: `${req.user.name || "A candidate"} applied for "${job.title}"`,
+        });
+      }
+    } catch (notifError) {
+      console.error("Failed to create application notification:", notifError);
+    }
 
     return res.status(201).json({
       success: true,
