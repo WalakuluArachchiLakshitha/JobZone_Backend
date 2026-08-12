@@ -11,5 +11,5 @@ export default {
   // Setup/teardown
   globalSetup: "./tests/globalSetup.js",
   globalTeardown: "./tests/globalTeardown.js",
-  setupFilesAfterFramework: [],
+  setupFilesAfterEnv: [],
 };

@@ -58,7 +58,7 @@ const updateResume = async (req, res) => {
         $set: updateData,
         $setOnInsert: { user: req.user._id },
       },
-      { returnDocument: "after", runValidators: true, upsert: true, new: true }
+      { returnDocument: "after", runValidators: true, upsert: true }
     );
 
     return res.status(200).json({
